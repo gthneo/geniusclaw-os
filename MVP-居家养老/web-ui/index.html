@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🦞 正龙虾 - 居家养老</title>
+    <style>
+        /* ===== 适老化设计 ===== */
+        :root {
+            --bg-primary: #0a1628;        /* 深蓝背景 */
+            --bg-secondary: #162447;      /* 卡片背景 */
+            --text-primary: #ffffff;      /* 主文字 */
+            --text-secondary: #a0aec0;    /* 次要文字 */
+            --accent: #4fd1c5;            /* 强调色 */
+            --danger: #fc8181;            /* 紧急按钮 */
+            --success: #68d391;           /* 成功 */
+            --font-size-base: 24px;       /* 基础字号 */
+            --font-size-lg: 32px;         /* 大字号 */
+            --font-size-xl: 40px;         /* 特大字号 */
+            --button-height: 70px;        /* 按钮高度 */
+            --border-radius: 16px;        /* 圆角 */
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ===== 顶部 ===== */
+        .header {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .logo {
+            font-size: var(--font-size-xl);
+            margin: 0;
+        }
+
+        .logo-icon {
+            font-size: 48px;
+        }
+
+        .status {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .status.online::before {
+            content: "🟢 ";
+        }
+
+        /* ===== 对话区 ===== */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 180px;
+        }
+
+        .message {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.ai {
+            align-items: flex-start;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .message.ai .avatar {
+            background: var(--accent);
+        }
+
+        .message.user .avatar {
+            background: #667eea;
+        }
+
+        .bubble {
+            max-width: 75%;
+            padding: 20px 24px;
+            border-radius: var(--border-radius);
+            word-wrap: break-word;
+        }
+
+        .message.ai .bubble {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent);
+        }
+
+        .message.user .bubble {
+            background: #2c5282;
+            border-right: 4px solid #667eea;
+        }
+
+        /* ===== 输入区 ===== */
+        .input-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+            border-top: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .voice-btn {
+            width: var(--button-height);
+            height: var(--button-height);
+            border-radius: 50%;
+            border: none;
+            background: var(--accent);
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .voice-btn:active {
+            transform: scale(0.95);
+            background: #38b2ac;
+        }
+
+        .voice-btn.recording {
+            background: var(--danger);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .text-input {
+            flex: 1;
+            height: var(--button-height);
+            border-radius: var(--border-radius);
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            padding: 0 20px;
+            outline: none;
+        }
+
+        .text-input:focus {
+            border-color: var(--accent);
+        }
+
+        .text-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* ===== 快捷按钮 ===== */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            height: var(--button-height);
+            padding: 0 24px;
+            border-radius: var(--border-radius);
+            border: none;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-emergency {
+            background: var(--danger);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-reminder {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-settings {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-secondary);
+        }
+
+        /* ===== 加载动画 ===== */
+        .loading {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .loading span {
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .loading span:nth-child(1) { animation-delay: -0.32s; }
+        .loading span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* ===== 弹窗 ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: var(--font-size-lg);
+            margin-bottom: 24px;
+        }
+
+        .modal-input {
+            width: 100%;
+            height: 60px;
+            font-size: var(--font-size-base);
+            margin-bottom: 20px;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btns button {
+            flex: 1;
+            height: 56px;
+            font-size: 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-confirm {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部 -->
+    <header class="header">
+        <h1 class="logo"><span class="logo-icon">🦞</span> 正龙虾</h1>
+        <p class="status online" id="status">正在连接...</p>
+    </header>
+
+    <!-- 对话区 -->
+    <div class="chat-container" id="chatContainer">
+        <!-- 消息会动态插入这里 -->
+    </div>
+
+    <!-- 输入区 -->
+    <div class="input-area">
+        <div class="input-wrapper">
+            <button class="voice-btn" id="voiceBtn" title="长按说话">🎤</button>
+            <input type="text" class="text-input" id="textInput" placeholder="点击输入或按住麦克风说话...">
+        </div>
+        
+        <!-- 快捷操作 -->
+        <div class="quick-actions">
+            <button class="action-btn btn-emergency" onclick="showEmergencyModal()">
+                📞 紧急呼叫
+            </button>
+            <button class="action-btn btn-reminder" onclick="showReminderModal()">
+                ⏰ 提醒
+            </button>
+            <button class="action-btn btn-settings" onclick="showSettings()">
+                ⚙️
+            </button>
+        </div>
+    </div>
+
+    <!-- 紧急呼叫弹窗 -->
+    <div class="modal" id="emergencyModal">
+        <div class="modal-content">
+            <h2 class="modal-title">📞 紧急呼叫</h2>
+            <p>确定要呼叫子女吗？</p>
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeModal('emergencyModal')">取消</button>
+                <button class="btn-confirm" onclick="makeEmergencyCall()">确认呼叫</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提醒弹窗 -->
+    <div class="modal" id="reminderModal">
+        <div class="modal-content">
+            <h2 class="modal-title">⏰ 设置提醒</h2>
+            <input type="text" class="text-input modal-input" id="reminderText" placeholder="提醒内容，如：吃药">
+            <input type="time" class="text-input modal-input" id="reminderTime">
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeModal('reminderModal')">取消</button>
+                <button class="btn-confirm" onclick="setReminder()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 状态 =====
+        let isRecording = false;
+        let recognition = null;
+        const API_BASE = window.location.origin;
+
+        // ===== 初始化 =====
+        document.addEventListener('DOMContentLoaded', () => {
+            initSpeechRecognition();
+            addWelcomeMessage();
+            checkConnection();
+        });
+
+        // ===== 语音识别 =====
+        function initSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                document.getElementById('voiceBtn').style.opacity = '0.5';
+                document.getElementById('voiceBtn').title = '您的浏览器不支持语音';
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'zh-CN';
+            recognition.continuous = false;
+            recognition.interimResults = true;
+
+            recognition.onresult = (event) => {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0].transcript)
+                    .join('');
+                
+                if (event.results[0].isFinal) {
+                    document.getElementById('textInput').value = transcript;
+                    sendMessage();
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('语音识别错误:', event.error);
+                stopRecording();
+            };
+
+            recognition.onend = () => {
+                stopRecording();
+            };
+        }
+
+        // ===== 录音控制 =====
+        const voiceBtn = document.getElementById('voiceBtn');
+        
+        voiceBtn.addEventListener('mousedown', startRecording);
+        voiceBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startRecording();
+        });
+        
+        voiceBtn.addEventListener('mouseup', stopRecording);
+        voiceBtn.addEventListener('touchend', stopRecording);
+        voiceBtn.addEventListener('mouseleave', stopRecording);
+
+        function startRecording() {
+            if (!recognition) return;
+            isRecording = true;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+            recognition.start();
+        }
+
+        function stopRecording() {
+            if (!isRecording) return;
+            isRecording = false;
+            voiceBtn.classList.remove('recording');
+            voiceBtn.textContent = '🎤';
+            if (recognition && recognition.state === 'running') {
+                recognition.stop();
+            }
+        }
+
+        // ===== 发送消息 =====
+        const textInput = document.getElementById('textInput');
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const text = textInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            textInput.value = '';
+            showLoading();
+
+            // 调用 OpenClaw API
+            fetch(`${API_BASE}/api/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            })
+            .then(res => res.json())
+            .then(data => {
+                hideLoading();
+                addMessage(data.reply || data.message || '抱歉，我没听清楚，请再说一次。', 'ai');
+            })
+            .catch(err => {
+                hideLoading();
+                addMessage('网络连接有问题，请检查网络后重试。', 'ai');
+                console.error(err);
+            });
+        }
+
+        // ===== 消息渲染 =====
+        function addMessage(text, sender) {
+            const container = document.getElementById('chatContainer');
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            div.innerHTML = `
+                <div class="avatar">${sender === 'ai' ? '🦞' : '👤'}</div>
+                <div class="bubble">${escapeHtml(text)}</div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addWelcomeMessage() {
+            const container = document.getElementById('chatContainer');
+            container.innerHTML = `
+                <div class="message ai">
+                    <div class="avatar">🦞</div>
+                    <div class="bubble">
+                        您好！我是正龙虾 🦞<br><br>
+                        您可以：<br>
+                        • 按住麦克风说话<br>
+                        • 点击输入框打字<br>
+                        • 有紧急情况点"紧急呼叫"<br><br>
+                        有什么可以帮您的？
+                    </div>
+                </div>
+            `;
+        }
+
+        function showLoading() {
+            const container = document.getElementById('chatContainer');
+            const div = document.createElement('div');
+            div.className = 'message ai';
+            div.id = 'loadingMsg';
+            div.innerHTML = `
+                <div class="avatar">🦞</div>
+                <div class="bubble">
+                    <div class="loading">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingMsg')?.remove();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ===== 连接状态 =====
+        function checkConnection() {
+            fetch(`${API_BASE}/api/status`)
+                .then(() => {
+                    document.getElementById('status').textContent = '🟢 在线';
+                    document.getElementById('status').classList.add('online');
+                })
+                .catch(() => {
+                    document.getElementById('status').textContent = '🔴 离线';
+                    document.getElementById('status').classList.remove('online');
+                });
+        }
+
+        // ===== 弹窗控制 =====
+        function showEmergencyModal() {
+            document.getElementById('emergencyModal').classList.add('show');
+        }
+
+        function showReminderModal() {
+            document.getElementById('reminderModal').classList.add('show');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        function makeEmergencyCall() {
+            // TODO: 实现实际呼叫功能
+            addMessage('已呼叫子女，请稍候...', 'ai');
+            closeModal('emergencyModal');
+        }
+
+        function setReminder() {
+            const text = document.getElementById('reminderText').value;
+            const time = document.getElementById('reminderTime').value;
+            if (text && time) {
+                addMessage(`已设置提醒：${text}，时间为 ${time}`, 'ai');
+                closeModal('reminderModal');
+                document.getElementById('reminderText').value = '';
+            }
+        }
+
+        function showSettings() {
+            addMessage('设置功能开发中...', 'ai');
+        }
+    </script>
+</body>
+</html>
