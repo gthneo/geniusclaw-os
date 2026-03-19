@@ -2,10 +2,6 @@
 /// MVP 客户端 - 服务层
 /// ========================================
 
-import 'dart:async';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-import '../models/models.dart';
 
 /// 设备发现服务
 /// 
@@ -380,6 +376,3 @@ class DeviceState {
   }
 }
 
-import 'dart:convert';
-import 'dart:async';
-import 'package:web_socket_channel/web_socket_channel.dart';

@@ -14,6 +14,31 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../models/models.dart';
 
 // ========================================
+// 异常定义
+// ========================================
+
+class DiscoveryException implements Exception {
+  final String message;
+  DiscoveryException(this.message);
+  
+  @override
+  String toString() => 'DiscoveryException: $message';
+}
+
+class DiscoveryTimeoutException implements Exception {
+  @override
+  String toString() => 'Discovery timeout';
+}
+
+class NotConnectedException implements Exception {
+  final String message;
+  NotConnectedException(this.message);
+  
+  @override
+  String toString() => 'NotConnectedException: $message';
+}
+
+// ========================================
 // 设备发现服务 - 实现
 // ========================================
 

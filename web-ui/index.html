@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeniusClaw OS - 控制台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">🦞</span>
+                <span class="logo-text">GeniusClaw</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">仪表盘</span>
+                </a>
+                <a href="#" class="nav-item" data-page="devices">
+                    <span class="nav-icon">📱</span>
+                    <span class="nav-text">设备管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="skills">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-text">技能市场</span>
+                </a>
+                <a href="#" class="nav-item" data-page="ai-chat">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">AI 对话</span>
+                </a>
+                <a href="#" class="nav-item" data-page="files">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-text">文件管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="voice-memo">
+                    <span class="nav-icon">🎙️</span>
+                    <span class="nav-text">语音备忘录</span>
+                </a>
+                <a href="#" class="nav-item" data-page="family">
+                    <span class="nav-icon">👨‍👩‍👧</span>
+                    <span class="nav-text">家庭协作</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">系统设置</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">BT</div>
+                    <div class="user-details">
+                        <span class="user-name">王丁焱</span>
+                        <span class="user-status">在线</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="top-bar">
+                <div class="page-title">
+                    <h1 id="page-title">仪表盘</h1>
+                </div>
+                <div class="top-actions">
+                    <button class="btn-icon" title="通知">
+                        <span>🔔</span>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="btn-icon" title="搜索">
+                        <span>🔍</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 页面内容 -->
+            <div class="content-area">
+                <!-- 仪表盘页面 -->
+                <div id="page-dashboard" class="page active">
+                    <!-- 状态卡片 -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🤖</div>
+                            <div class="stat-info">
+                                <span class="stat-value">12</span>
+                                <span class="stat-label">在线设备</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-info">
+                                <span class="stat-value">48</span>
+                                <span class="stat-label">已安装技能</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💬</div>
+                            <div class="stat-info">
+                                <span class="stat-value">1,234</span>
+                                <span class="stat-label">本月对话</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-info">
+                                <span class="stat-value">98%</span>
+                                <span class="stat-label">系统运行</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 最近活动 -->
+                    <div class="section">
+                        <h2 class="section-title">最近活动</h2>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon">🤖</div>
+                                <div class="activity-content">
+                                    <p>设备 "客厅中控" 已上线</p>
+                                    <span class="activity-time">5分钟前</span>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">🎯</div>
+                                <div class="activity-content">
+                                    <p>新技能 "居家养老" 已安装</p>
+                                    <span class="activity-time">1小时前</span>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">💬</div>
+                                <div class="activity-content">
+                                    <p>AI 对话记录: 234 条</p>
+                                    <span class="activity-time">今天</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设备管理页面 -->
+                <div id="page-devices" class="page">
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">已连接设备</h2>
+                            <button class="btn-primary">
+                                <span>+</span> 添加设备
+                            </button>
+                        </div>
+                        <div class="device-grid">
+                            <div class="device-card">
+                                <div class="device-status online"></div>
+                                <div class="device-icon">🖥️</div>
+                                <div class="device-name">客厅中控</div>
+                                <div class="device-ip">192.168.1.100</div>
+                                <div class="device-actions">
+                                    <button class="btn-sm">管理</button>
+                                </div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-status online"></div>
+                                <div class="device-icon">📱</div>
+                                <div class="device-name">手机助手</div>
+                                <div class="device-ip">192.168.1.101</div>
+                                <div class="device-actions">
+                                    <button class="btn-sm">管理</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 技能市场页面 -->
+                <div id="page-skills" class="page">
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">技能市场</h2>
+                            <div class="search-box">
+                                <input type="text" placeholder="搜索技能...">
+                            </div>
+                        </div>
+                        <div class="skills-grid">
+                            <div class="skill-card">
+                                <div class="skill-icon">🏠</div>
+                                <div class="skill-name">居家养老</div>
+                                <div class="skill-desc">老人健康监测与提醒</div>
+                                <button class="btn-primary btn-sm">安装</button>
+                            </div>
+                            <div class="skill-card">
+                                <div class="skill-icon">🚗</div>
+                                <div class="skill-name">网约车司机</div>
+                                <div class="skill-desc">订单管理与行程规划</div>
+                                <button class="btn-primary btn-sm">安装</button>
+                            </div>
+                            <div class="skill-card">
+                                <div class="skill-icon">🏢</div>
+                                <div class="skill-name">企业管理</div>
+                                <div class="skill-desc">企业协同与流程管理</div>
+                                <button class="btn-primary btn-sm">安装</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI 对话页面 -->
+                <div id="page-ai-chat" class="page">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message bot">
+                                <div class="message-avatar">🤖</div>
+                                <div class="message-content">
+                                    <p>您好！我是 GeniusClaw AI 助手。有什么可以帮助您的？</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chat-input" placeholder="输入消息...">
+                            <button class="btn-send">发送</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 语音备忘录页面 -->
+                <div id="page-voice-memo" class="page">
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">🎙️ 语音备忘录</h2>
+                            <button class="btn-primary">
+                                <span>↻</span> 同步 iPhone
+                            </button>
+                        </div>
+                        <div class="memo-list">
+                            <div class="memo-item">
+                                <div class="memo-icon">🎵</div>
+                                <div class="memo-info">
+                                    <div class="memo-title">关于项目启动的想法</div>
+                                    <div class="memo-meta">2026-03-19 10:00 · 2:34</div>
+                                </div>
+                                <button class="btn-icon-sm">▶️</button>
+                            </div>
+                            <div class="memo-item">
+                                <div class="memo-icon">🎵</div>
+                                <div class="memo-info">
+                                    <div class="memo-title">家庭会议记录</div>
+                                    <div class="memo-meta">2026-03-18 15:30 · 5:12</div>
+                                </div>
+                                <button class="btn-icon-sm">▶️</button>
+                            </div>
+                            <div class="memo-item">
+                                <div class="memo-icon">🎵</div>
+                                <div class="memo-info">
+                                    <div class="memo-title">产品设计灵感</div>
+                                    <div class="memo-meta">2026-03-17 09:15 · 1:45</div>
+                                </div>
+                                <button class="btn-icon-sm">▶️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 家庭协作页面 -->
+                <div id="page-family" class="page">
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">👨‍👩‍👧 家庭协作</h2>
+                            <button class="btn-primary">
+                                <span>+</span> 邀请成员
+                            </button>
+                        </div>
+                        <div class="family-grid">
+                            <div class="family-card">
+                                <div class="member-avatar">👴</div>
+                                <div class="member-name">父亲</div>
+                                <div class="member-status">在线</div>
+                            </div>
+                            <div class="family-card">
+                                <div class="member-avatar">👵</div>
+                                <div class="member-name">母亲</div>
+                                <div class="member-status">在线</div>
+                            </div>
+                            <div class="family-card">
+                                <div class="member-avatar">👦</div>
+                                <div class="member-name">儿子</div>
+                                <div class="member-status">2小时前</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设置页面 -->
+                <div id="page-settings" class="page">
+                    <!-- 一级菜单 -->
+                    <div class="settings-menu">
+                        <button class="settings-menu-item active" data-target="basic">
+                            <span class="menu-icon">⚙️</span>
+                            <span>基本设置</span>
+                        </button>
+                        <button class="settings-menu-item" data-target="network">
+                            <span class="menu-icon">🌐</span>
+                            <span>网络设置</span>
+                        </button>
+                        <button class="settings-menu-item" data-target="security">
+                            <span class="menu-icon">🛡️</span>
+                            <span>安全设置</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 基本设置 (默认) -->
+                    <div id="settings-basic" class="settings-content active">
+                        <div class="section">
+                            <h2 class="section-title">⚙️ 基本设置</h2>
+                            <div class="settings-form">
+                                <div class="form-group">
+                                    <label>设备名称</label>
+                                    <input type="text" value="GeniusClaw-001">
+                                </div>
+                                <div class="form-group">
+                                    <label>AI 模型</label>
+                                    <select>
+                                        <option>MiniMax-M2.5</option>
+                                        <option>Claude 3.5</option>
+                                        <option>GPT-4</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>主题</label>
+                                    <select>
+                                        <option>浅色</option>
+                                        <option>深色</option>
+                                        <option>跟随系统</option>
+                                    </select>
+                                </div>
+                                <button class="btn-primary">保存设置</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 网络设置 (第二层) -->
+                    <div id="settings-network" class="settings-content">
+                        <div class="section">
+                            <h2 class="section-title">🌐 网络设置</h2>
+                            
+                            <!-- 网络连接类型 -->
+                            <div class="form-group">
+                                <label>互联网接入方式</label>
+                                <select id="connection-type" onchange="toggleConnectionType()">
+                                    <option value="dhcp">DHCP (自动获取)</option>
+                                    <option value="pppoe">PPPoE (宽带拨号)</option>
+                                    <option value="static">静态 IP</option>
+                                </select>
+                            </div>
+                            
+                            <!-- PPPoE 配置 -->
+                            <div id="pppoe-config" class="connection-config" style="display: none;">
+                                <div class="config-card">
+                                    <h3>📞 PPPoE 宽带拨号</h3>
+                                    <p class="config-desc">适用于需要账号密码拨号的宽带网络（如某些小区宽带、ADSL）</p>
+                                    
+                                    <div class="form-group">
+                                        <label>宽带账号 (Username)</label>
+                                        <input type="text" placeholder="请输入宽带账号">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>宽带密码 (Password)</label>
+                                        <input type="password" placeholder="请输入宽带密码">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>服务名称 (可选)</label>
+                                        <input type="text" placeholder="留空使用默认">
+                                    </div>
+                                    
+                                    <div class="connection-status">
+                                        <span class="status-label">连接状态:</span>
+                                        <span class="status-value disconnected">未连接</span>
+                                    </div>
+                                    
+                                    <div class="btn-group">
+                                        <button class="btn-primary" onclick="connectPPPoE()">连接</button>
+                                        <button class="btn-secondary" onclick="disconnectPPPoE()">断开</button>
+                                        <button class="btn-secondary" onclick="savePPPoEConfig()">保存配置</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 静态 IP 配置 -->
+                            <div id="static-config" class="connection-config" style="display: none;">
+                                <div class="config-card">
+                                    <h3>🔢 静态 IP 配置</h3>
+                                    
+                                    <div class="form-group">
+                                        <label>IP 地址</label>
+                                        <input type="text" placeholder="192.168.1.100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>子网掩码</label>
+                                        <input type="text" placeholder="255.255.255.0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>网关</label>
+                                        <input type="text" placeholder="192.168.1.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>DNS 服务器</label>
+                                        <input type="text" placeholder="8.8.8.8">
+                                    </div>
+                                    
+                                    <button class="btn-primary">保存</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 当前网络状态 -->
+                            <div class="network-status-card">
+                                <h3>📊 当前网络状态</h3>
+                                <div class="status-grid">
+                                    <div class="status-item">
+                                        <span class="status-label">WAN 口状态</span>
+                                        <span class="status-value online">已连接</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">IP 地址</span>
+                                        <span class="status-value">192.168.100.10</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">上网方式</span>
+                                        <span class="status-value">PPPoE</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">上行速度</span>
+                                        <span class="status-value">50 Mbps</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">下行速度</span>
+                                        <span class="status-value">200 Mbps</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">运行时间</span>
+                                        <span class="status-value">5天 12小时</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 安全设置 -->
+                    <div id="settings-security" class="settings-content">
+                        <div class="section">
+                            <h2 class="section-title">🛡️ 安全设置</h2>
+                            <div class="settings-form">
+                                <div class="form-group">
+                                    <label>防火墙</label>
+                                    <select>
+                                        <option>开启</option>
+                                        <option>关闭</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>防诈骗模式</label>
+                                    <select>
+                                        <option>开启</option>
+                                        <option>关闭</option>
+                                    </select>
+                                    <p class="form-help">开启后过滤可疑网站和诈骗电话</p>
+                                </div>
+                                <button class="btn-primary">保存设置</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

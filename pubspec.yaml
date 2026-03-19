@@ -1,0 +1,38 @@
+name: geniusclaw_app
+description: "GeniusClaw OS - Flutter Mobile App"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  
+  # 网络
+  dio: ^5.3.0
+  web_socket_channel: ^2.4.0
+  
+  # 状态管理
+  flutter_riverpod: ^2.4.0
+  
+  # 本地存储
+  shared_preferences: ^2.2.0
+  
+  # UI
+  flutter_markdown: ^0.6.18
+  cached_network_image: ^3.3.0
+  
+  # 工具
+  path_provider: ^2.1.0
+  intl: ^0.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
