@@ -958,71 +958,488 @@ class BlockchainManager {
 
 ## 6. 测试用例
 
-### 6.1 单元测试
+### 6.1 测试策略
 
-#### 6.1.1 Skills 模块
+#### 🧪 TDD 开发模式（核心原则）
 
-| 用例ID | 描述 | 预期结果 | 优先级 |
-|--------|------|----------|--------|
-| UT-SKL-001 | 加载有效的 Skill 包 | 成功加载并解析 | P0 |
-| UT-SKL-002 | 安装 Skill 到指定目录 | 文件正确创建 | P0 |
-| UT-SKL-003 | 卸载 Skill 并清理文件 | 完全清理 | P0 |
-| UT-SKL-004 | Skill 配置验证（无效配置）| 提示错误信息 | P1 |
-| UT-SKL-005 | Skill 依赖检查 | 正确识别缺失依赖 | P1 |
-| UT-SKL-006 | 运行 Skill 并获取结果 | 返回预期结果 | P0 |
-| UT-SKL-007 | 停止运行中的 Skill | 正确停止 | P0 |
-| UT-SKL-008 | 验证 Skill 签名 | 签名验证通过/失败 | P1 |
+> **重要**：GC OS 开发采用 **测试驱动开发 (Test-Driven Development)** 流程
 
-#### 6.1.2 LLM 模块
+```
+TDD 循环：
+┌─────────────────────────────────────────────────────────┐
+│  1. 编写测试 (Red)     →  测试失败，显示需求           │
+│         ↓                                             │
+│  2. 编写代码 (Green)   →  通过测试，实现功能           │
+│         ↓                                             │
+│  3. 重构 (Refactor)     →  优化代码，保持测试通过       │
+│         ↓                                             │
+│  4. 提交 → 循环                                       │
+└─────────────────────────────────────────────────────────┘
+```
 
-| 用例ID | 描述 | 预期结果 | 优先级 |
-|--------|------|----------|--------|
-| UT-LLM-001 | 连接本地 Ollama | 连接成功 | P0 |
-| UT-LLM-002 | 断开 Ollama | 正确断开 | P0 |
-| UT-LLM-003 | 获取模型列表 | 返回模型数组 | P0 |
-| UT-LLM-004 | 下载模型 | 下载成功 | P0 |
-| UT-LLM-005 | 删除模型 | 删除成功 | P0 |
-| UT-LLM-006 | 文本生成 | 返回生成文本 | P0 |
-| UT-LLM-007 | 对话推理 | 返回对话结果 | P0 |
-| UT-LLM-008 | 切换默认模型 | 切换成功 | P0 |
-| UT-LLM-009 | 获取模型性能指标 | 返回指标数据 | P1 |
+**TDD 开发流程**：
 
-#### 6.1.3 网络模块
+```bash
+# 1. 创建测试文件
+# tests/skills/engine.test.ts
 
-| 用例ID | 描述 | 预期结果 | 优先级 |
-|--------|------|----------|--------|
-| UT-NET-001 | 获取网络状态（DHCP）| 返回正确状态 | P0 |
+# 2. 运行测试（红色 - 失败）
+npm test -- --testPathPattern=skills/engine
+
+# 3. 编写最小代码通过测试（绿色）
+# src/skills/engine.ts
+
+# 4. 重构优化
+# 保持测试通过
+
+# 5. 提交
+git commit -m "feat(skills): add engine implementation"
+```
+
+#### 6.1.1 测试金字塔
+
+```
+                    ┌─────────────┐
+                    │   E2E 测试   │  ← 少量，关键场景
+                   ┌──────────────┐ │
+                   │  集成测试    │ │ ← 中等，模块交互
+                  ┌───────────────┐ │
+                  │   单元测试    │ │ ← 大量，独立功能
+                 ┌────────────────┐│
+                 │   Mock/Stub    ││
+                 └────────────────┘┘
+```
+
+#### 6.1.2 测试环境
+
+| 环境 | 用途 | 配置 |
+|------|------|------|
+| **开发环境** | 本地开发调试 | 4核8GB, 模拟存储 |
+| **测试环境** | 自动化测试 | 8核16GB, 真机 |
+| **预发布环境** | 验收测试 | 与生产一致 |
+| **生产环境** | 最终部署 | 目标硬件 |
+
+#### 6.1.2 测试数据管理
+
+```typescript
+// 测试数据结构
+interface TestData {
+  id: string;
+  category: 'skill' | 'llm' | 'network' | 'storage';
+  name: string;
+  input: any;
+  expected: any;
+  fixtures?: {
+    skillPackage?: string;
+    modelFile?: string;
+    config?: any;
+  };
+}
+
+// 测试数据示例
+const testDatasets = {
+  skills: [
+    { id: 'skill-home-care', name: '居家养老场景', enabled: true },
+    { id: 'skill-transport', name: '网约车场景', enabled: false }
+  ],
+  llm: [
+    { id: 'llama2', provider: 'ollama', size: '7b' },
+    { id: 'gpt-4', provider: 'openrouter' }
+  ],
+  network: [
+    { type: 'dhcp', expected: { connected: true } },
+    { type: 'pppoe', username: 'test', password: 'test123' }
+  ]
+};
+```
+
+---
+
+### 6.2 单元测试
+
+#### 6.2.1 Skills 模块
+
+| 用例ID | 测试场景 | 前置条件 | 测试步骤 | 预期结果 | 优先级 | 测试框架 |
+|--------|----------|----------|----------|----------|--------|----------|
+| UT-SKL-001 | 加载有效 Skill 包 | Skill 包完整 | 调用 loadSkill('valid-skill.zip') | 返回 Skill 对象，状态为 loaded | P0 | Jest |
+| UT-SKL-002 | 安装 Skill | 有效的 Skill | 调用 installSkill(skill) | 文件正确创建，配置写入注册表 | P0 | Jest |
+| UT-SKL-003 | 卸载 Skill | Skill 已安装 | 调用 uninstallSkill(skillId) | 完全清理，无残留文件 | P0 | Jest |
+| UT-SKL-004 | Skill 配置验证 - 无效配置 | 配置文件损坏 | 调用 validateConfig(config) | 抛出 ValidationError | P1 | Jest |
+| UT-SKL-005 | Skill 依赖检查 | Skill 有依赖 | 调用 checkDependencies(skill) | 正确识别并列出缺失依赖 | P1 | Jest |
+| UT-SKL-006 | 运行 Skill | Skill 已安装 | 调用 runSkill(skillId, context) | 返回预期结果 | P0 | Jest |
+| UT-SKL-007 | 停止 Skill | Skill 正在运行 | 调用 stopSkill(skillId) | Skill 进程停止 | P0 | Jest |
+| UT-SKL-008 | 验证 Skill 签名 | Skill 已签名 | 调用 verifySignature(skill) | 返回 true/false | P1 | Jest |
+| UT-SKL-009 | Skill 生命周期转换 | Skill 各种状态 | 触发状态转换 | 状态正确转换 | P2 | Jest |
+| UT-SKL-010 | Skill 并发运行限制 | 多个 Skill | 启动超过限制的 Skill | 正确拒绝 | P2 | Jest |
+
+**Skill 模块测试代码示例**:
+
+```typescript
+// skills.test.ts
+import { SkillEngine } from './engine';
+import { Skill } from './types';
+
+describe('SkillEngine', () => {
+  let engine: SkillEngine;
+  
+  beforeEach(() => {
+    engine = new SkillEngine({
+      basePath: '/test/skills',
+      installPath: '/test/install',
+      registryPath: '/test/registry.json'
+    });
+  });
+  
+  describe('loadSkill()', () => {
+    it('should load valid skill package', async () => {
+      const skill = await engine.loadSkill('./fixtures/valid-skill.zip');
+      expect(skill).toBeInstanceOf(Skill);
+      expect(skill.status).toBe('loaded');
+    });
+    
+    it('should throw on invalid package', async () => {
+      await expect(engine.loadSkill('./fixtures/invalid.zip'))
+        .rejects.toThrow('Invalid skill package');
+    });
+  });
+  
+  describe('installSkill()', () => {
+    it('should install skill to specified directory', async () => {
+      const skill = await engine.loadSkill('./fixtures/valid-skill.zip');
+      await engine.installSkill(skill);
+      expect(fs.existsSync('/test/install/skill-home-care')).toBe(true);
+    });
+  });
+  
+  describe('runSkill()', () => {
+    it('should execute skill and return result', async () => {
+      const result = await engine.runSkill('skill-home-care', {
+        input: { action: 'sos' },
+        context: { userId: 'user1' }
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+});
+```
+
+#### 6.2.2 大模型模块 (LLM)
+
+| 用例ID | 测试场景 | 前置条件 | 测试步骤 | 预期结果 | 优先级 | 测试框架 |
+|--------|----------|----------|----------|----------|--------|----------|
+| UT-LLM-001 | 连接 Ollama | Ollama 运行中 | 调用 connect() | 连接成功，无异常 | P0 | Jest |
+| UT-LLM-002 | 断开 Ollama | 已连接 | 调用 disconnect() | 正确断开 | P0 | Jest |
+| UT-LLM-003 | 获取模型列表 | Ollama 运行 | 调用 listModels() | 返回模型数组 | P0 | Jest |
+| UT-LLM-004 | 下载模型 | 有可用模型 | 调用 downloadModel('llama2') | 下载成功 | P0 | Jest |
+| UT-LLM-005 | 删除模型 | 模型已下载 | 调用 removeModel('llama2') | 删除成功 | P0 | Jest |
+| UT-LLM-006 | 文本生成 | 模型已加载 | 调用 generate('Hello') | 返回生成文本 | P0 | Jest |
+| UT-LLM-007 | 对话推理 | 模型已加载 | 调用 chat(messages) | 返回对话结果 | P0 | Jest |
+| UT-LLM-008 | 切换默认模型 | 多个模型 | 调用 setDefaultModel('llama2') | 切换成功 | P0 | Jest |
+| UT-LLM-009 | 模型性能监控 | 生成完成 | 调用 getMetrics() | 返回性能指标 | P1 | Jest |
+| UT-LLM-010 | Provider 切换 | 多个 Provider | 调用 switchProvider('openrouter') | 切换成功 | P1 | Jest |
+| UT-LLM-011 | Embedding 向量 | 模型已加载 | 调用 embed('text') | 返回向量数组 | P1 | Jest |
+
+**LLM 模块测试代码示例**:
+
+```typescript
+// llm-manager.test.ts
+import { LLMManager } from './manager';
+
+describe('LLMManager', () => {
+  let manager: LLMManager;
+  let mockProvider: jest.Mocked<any>;
+  
+  beforeEach(() => {
+    manager = new LLMManager();
+    mockProvider = {
+      id: 'ollama', name: 'Ollama', type: 'local',
+      connect: jest.fn().mockResolvedValue(undefined),
+      listModels: jest.fn().mockResolvedValue([
+        { id: 'llama2', name: 'Llama 2', size: 4000000000, status: 'downloaded' }
+      ]),
+      generate: jest.fn().mockResolvedValue('Generated text'),
+      chat: jest.fn().mockResolvedValue({ role: 'assistant', content: 'Response' }),
+    } as any;
+    manager.registerProvider(mockProvider);
+  });
+  
+  describe('listModels()', () => {
+    it('should return all models from all providers', async () => {
+      const models = await manager.listModels();
+      expect(models.length).toBeGreaterThan(0);
+    });
+  });
+  
+  describe('generate()', () => {
+    it('should generate text and record metrics', async () => {
+      const result = await manager.generate('Hello');
+      expect(result).toBe('Generated text');
+    });
+    
+    it('should handle generation errors', async () => {
+      mockProvider.generate.mockRejectedValue(new Error('Model not found'));
+      await expect(manager.generate('test')).rejects.toThrow('Model not found');
+    });
+  });
+});
+```
+
+#### 6.2.3 网络模块
+
+| 用例ID | 测试场景 | 预期结果 | 优先级 |
+|--------|----------|----------|--------|
+| UT-NET-001 | 获取网络状态 (DHCP) | 返回正确状态，IP已分配 | P0 |
 | UT-NET-002 | 连接 PPPoE | 连接成功 | P0 |
 | UT-NET-003 | 断开 PPPoE | 断开成功 | P0 |
-| UT-NET-004 | 配置静态 IP | 配置生效 | P0 |
+| UT-NET-004 | 配置静态 IP | IP 配置生效 | P0 |
 | UT-NET-005 | 启动 VPN | VPN 运行 | P1 |
 | UT-NET-006 | 停止 VPN | VPN 停止 | P1 |
 | UT-NET-007 | 配置广告拦截 | 拦截规则生效 | P1 |
+| UT-NET-008 | 获取实时网速 | 返回上传/下载速度 | P1 |
+| UT-NET-009 | 网络自动重连 | 自动重连成功 | P2 |
+| UT-NET-010 | 流量统计 | 返回统计数据 | P2 |
 
-### 6.2 集成测试
+#### 6.2.4 存储模块 (NAS)
 
-| 用例ID | 描述 | 预期结果 | 优先级 |
-|--------|------|----------|--------|
-| IT-001 | Skills 调用 LLM 生成 | 正常返回 | P0 |
-| IT-002 | Skills 读取文件系统 | 正确读取 | P0 |
-| IT-003 | NAS 存储写入/读取 | 读写成功 | P0 |
-| IT-004 | VPN 连接外部服务 | 连接成功 | P1 |
-| IT-005 | 外设识别并驱动 | 正确识别 | P0 |
-| IT-006 | 移动端 App 远程控制 | 控制成功 | P1 |
-| IT-007 | 多 Skills 并发运行 | 并发正常 | P1 |
+| 用例ID | 测试场景 | 预期结果 | 优先级 |
+|--------|----------|----------|--------|
+| UT-NAS-001 | 创建存储卷 | 卷创建成功 | P0 |
+| UT-NAS-002 | 挂载存储卷 | 挂载成功 | P0 |
+| UT-NAS-003 | 卸载存储卷 | 卸载成功 | P0 |
+| UT-NAS-004 | 配置 SMB 共享 | 共享配置成功 | P0 |
+| UT-NAS-005 | 配置 NFS 共享 | 共享配置成功 | P0 |
+| UT-NAS-006 | 启动 Plex | Plex 运行 | P1 |
+| UT-NAS-007 | 停止 Plex | Plex 停止 | P1 |
+| UT-NAS-008 | 磁盘健康检查 | 返回健康状态 | P1 |
+| UT-NAS-009 | RAID 配置 | RAID 创建成功 | P2 |
 
-### 6.3 系统测试
+#### 6.2.5 外设模块
 
-| 用例ID | 描述 | 预期结果 | 优先级 |
-|--------|------|----------|--------|
-| ST-001 | 全新安装（ISO 启动）| 成功安装 | P0 |
-| ST-002 | 升级安装（保留数据）| 数据保留 | P0 |
-| ST-003 | 冷启动时间 | < 30s | P0 |
-| ST-004 | 24小时连续运行 | 无崩溃 | P0 |
-| ST-005 | 内存泄漏检测 | 无泄漏 | P1 |
-| ST-006 | 断电后恢复 | 自动恢复 | P1 |
-| ST-007 | 网络异常处理 | 正确恢复 | P0 |
-| ST-008 | 大容量存储识别 | 正确识别 | P1 |
+| 用例ID | 测试场景 | 预期结果 | 优先级 |
+|--------|----------|----------|--------|
+| UT-PRD-001 | 扫描外设 | 返回设备列表 | P0 |
+| UT-PRD-002 | 安装驱动 | 驱动安装成功 | P0 |
+| UT-PRD-003 | 智能家居 MQTT | 连接成功 | P1 |
+| UT-PRD-004 | 发送 MQTT 命令 | 命令发送成功 | P1 |
+| UT-PRD-005 | Modbus 通信 | 返回数据 | P2 |
+| UT-PRD-006 | Zigbee 设备配对 | 配对成功 | P2 |
+
+#### 6.2.6 区块链模块
+
+| 用例ID | 测试场景 | 预期结果 | 优先级 |
+|--------|----------|----------|--------|
+| UT-BC-001 | 创建钱包 | 钱包创建成功 | P2 |
+| UT-BC-002 | 导入钱包 | 导入成功 | P2 |
+| UT-BC-003 | 获取余额 | 返回余额 | P2 |
+| UT-BC-004 | 转账 | 交易提交成功 | P2 |
+| UT-BC-005 | 调用智能合约 | 返回结果 | P2 |
+
+---
+
+### 6.3 集成测试
+
+#### 6.3.1 模块间集成
+
+| 用例ID | 测试场景 | 涉及模块 | 预期结果 | 优先级 |
+|--------|----------|----------|----------|--------|
+| IT-001 | Skills 调用 LLM 生成 | Skills + LLM | 正常返回结果 | P0 |
+| IT-002 | Skills 读取文件系统 | Skills + Storage | 正确读取 | P0 |
+| IT-003 | NAS 存储读写 | NAS + Storage | 读写成功 | P0 |
+| IT-004 | VPN 连接外部服务 | Network + VPN | 连接成功 | P1 |
+| IT-005 | 外设识别并驱动 | Peripherals + Driver | 正确识别 | P0 |
+| IT-006 | 移动端 App 远程控制 | Mobile + API | 控制成功 | P1 |
+| IT-007 | 多 Skills 并发运行 | Skills × N | 并发正常 | P1 |
+| IT-008 | Web UI 配置网络 | UI + Network | 配置生效 | P0 |
+| IT-009 | 区块链支付流程 | Blockchain + Skills | 支付成功 | P2 |
+
+#### 6.3.2 端到端场景
+
+| 用例ID | 场景描述 | 预期结果 | 优先级 |
+|--------|----------|----------|--------|
+| E2E-001 | 居家养老 SOS | 家属收到通知 | P0 |
+| E2E-002 | 网约车收益统计 | 报表生成 | P1 |
+| E2E-003 | NAS 影片串流 | 播放流畅 | P1 |
+| E2E-004 | 智能家居控制 | 设备响应 | P1 |
+
+**集成测试代码示例**:
+
+```typescript
+// integration.test.ts
+describe('Skills + LLM Integration', () => {
+  it('should generate response via LLM in skill', async () => {
+    const skillEngine = new SkillEngine(config);
+    const llmManager = new LLMManager();
+    
+    const skill = await skillEngine.loadSkill('./fixtures/llm-skill.zip');
+    await skillEngine.installSkill(skill);
+    
+    const result = await skillEngine.runSkill(skill.id, {
+      input: { prompt: 'Say hello' },
+      context: { useLLM: true }
+    });
+    
+    expect(result.output).toContain('hello');
+  });
+});
+```
+
+---
+
+### 6.4 系统测试
+
+#### 6.4.1 安装与启动
+
+| 用例ID | 测试场景 | 预期结果 | 判定标准 |
+|--------|----------|----------|----------|
+| ST-001 | ISO 全新安装 | 安装成功 | 无错误日志 |
+| ST-002 | 升级安装 | 数据保留 | 配置完整 |
+| ST-003 | 冷启动时间 | < 30s | 计时 < 30s |
+| ST-004 | 热重启 | < 60s | 计时 < 60s |
+
+#### 6.4.2 稳定性测试
+
+| 用例ID | 测试场景 | 预期结果 | 判定标准 |
+|--------|----------|----------|----------|
+| ST-005 | 24小时连续运行 | 无崩溃 | 无 error 日志 |
+| ST-006 | 内存泄漏检测 | 内存稳定 | 增长 < 10% |
+| ST-007 | 断电恢复 | 自动恢复 | 服务正常 |
+| ST-008 | 网络异常恢复 | 自动重连 | 恢复正常 |
+
+#### 6.4.3 性能测试
+
+| 用例ID | 指标 | 目标值 | 测试方法 |
+|--------|------|--------|----------|
+| ST-009 | 启动时间 | < 30s | 计时 |
+| ST-010 | API 响应时间 | < 200ms | 压力测试 |
+| ST-011 | 并发 Skill 数 | ≥ 10 | 负载测试 |
+| ST-012 | 模型推理延迟 | < 2s (7b) | 基准测试 |
+| ST-013 | NAS 读写速度 | > 100 MB/s | 性能测试 |
+| ST-014 | 内存占用 (空闲) | < 2GB | 监控 |
+
+#### 6.4.4 安全测试
+
+| 用例ID | 测试场景 | 预期结果 |
+|--------|----------|----------|
+| ST-015 | 权限绕过 | 拒绝访问 |
+| ST-016 | SQL 注入 | 过滤/拒绝 |
+| ST-017 | XSS 攻击 | 过滤/转义 |
+| ST-018 | 敏感数据加密 | 已加密 |
+| ST-019 | Skill 沙箱隔离 | 隔离有效 |
+
+#### 6.4.5 兼容性测试
+
+| 用例ID | 测试对象 | 预期结果 |
+|--------|----------|----------|
+| ST-020 | x86_64 平台 | 正常运行 |
+| ST-021 | ARM64 平台 | 正常运行 |
+| ST-022 | 虚拟机环境 | 正常运行 |
+| ST-023 | 常见网卡 | 驱动正常 |
+| ST-024 | 常见显卡 | 显示正常 |
+
+---
+
+### 6.5 UI 自动化测试
+
+| 用例ID | 页面 | 测试场景 | 预期结果 |
+|--------|------|----------|----------|
+| UI-001 | 仪表盘 | 加载首页 | 显示系统状态 |
+| UI-002 | Skills 市场 | 浏览技能 | 列表显示正常 |
+| UI-003 | Skills 安装 | 点击安装 | 安装成功 |
+| UI-004 | 网络设置 | 配置 PPPoE | 保存成功 |
+| UI-005 | 存储管理 | 创建卷 | 创建成功 |
+| UI-006 | 响应式设计 | 缩放窗口 | 布局正确 |
+
+**UI 测试代码示例**:
+
+```typescript
+// web-ui.test.ts
+import { test, expect } from '@playwright/test';
+
+test('Skills Market - should install skill', async ({ page }) => {
+  await page.goto('/skills');
+  await page.click('.skill-card:first-child .install-btn');
+  await expect(page.locator('.notification'))
+    .toContainText('安装成功');
+});
+```
+
+---
+
+### 6.6 测试执行
+
+#### 6.6.1 测试命令
+
+```bash
+# 运行所有单元测试
+npm test
+
+# 运行单元测试（带覆盖率）
+npm test -- --coverage
+
+# 运行特定模块测试
+npm test -- --testPathPattern=skills
+
+# 运行集成测试
+npm run test:integration
+
+# 运行 E2E 测试
+npm run test:e2e
+```
+
+#### 6.6.2 CI/CD 集成
+
+```yaml
+# .github/workflows/test.yml
+name: Test Suite
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm test -- --coverage
+      - name: Run integration tests
+        run: npm run test:integration
+```
+
+---
+
+### 6.7 缺陷管理
+
+#### 6.7.1 缺陷等级
+
+| 等级 | 定义 | 响应时间 | 示例 |
+|------|------|----------|------|
+| P0-Critical | 系统崩溃，数据丢失 | 立即 | 无法启动 |
+| P1-High | 核心功能不可用 | 24h | Skill 无法运行 |
+| P2-Medium | 功能异常 | 72h | UI 显示错误 |
+| P3-Low | 界面/体验问题 | 1周 | 文字错位 |
+
+#### 6.7.2 缺陷报告模板
+
+```markdown
+## 缺陷报告
+
+**ID**: BUG-001
+**标题**: [简要描述]
+**严重等级**: P0/P1/P2/P3
+**模块**: Skills/LLM/Network/NAS/...
+**复现步骤**:
+1. [步骤1]
+2. [步骤2]
+**预期结果**: [期望]
+**实际结果**: [实际]
+**日志**: [相关日志]
+```
 
 ---
 
