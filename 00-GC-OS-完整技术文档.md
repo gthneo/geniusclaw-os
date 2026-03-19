@@ -1,7 +1,7 @@
 # 🦞 GeniusClaw Operation System 完整技术文档
 
-> 版本: v2.0 | 创建日期: 2026-03-19 | 作者: PT (Prometheus Trump)
-> 飞书文档: https://feishu.cn/docx/OrLIddwscoEWGUxIoaPcPuC5nVD
+> 版本: v2.1 | 创建日期: 2026-03-19 | 作者: PT (Prometheus Trump)
+> 本地文档 | GitHub: https://github.com/gthneo/geniusclaw-os
 
 ---
 
