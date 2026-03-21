@@ -1,27 +1,69 @@
 /// API 配置
 class ApiConfig {
-  // 默认配置（可通过设置页面修改）
-  static String defaultHost = '192.168.1.100';
-  static String defaultPort = '8080';
+  static const String kDefaultHost = '192.168.31.156';
+  static const String kDefaultPort = '18790';
+  static const String kRestApiPort = '8080';
   
-  // 基础 URL
-  static String get baseUrl => 'http://$defaultHost:$defaultPort/api';
+  static String defaultHost = kDefaultHost;
+  static String defaultPort = kDefaultPort;
   
-  // WebSocket URL
+  static String get baseUrl => 'http://$defaultHost:$kRestApiPort/api';
+  
   static String get wsUrl => 'ws://$defaultHost:$defaultPort/ws';
   
-  // 更新连接配置
   static void updateHost(String host, String port) {
     defaultHost = host;
     defaultPort = port;
   }
   
-  // HA (HomeAssistant) 配置
+  static void resetToDefault() {
+    defaultHost = kDefaultHost;
+    defaultPort = kDefaultPort;
+  }
+  
   static String haUrl = 'http://192.168.1.101:8123';
   static String haToken = '';
   
-  // NAS 配置
   static String nasUrl = 'smb://192.168.1.102/nas';
   static String nasUsername = '';
   static String nasPassword = '';
+}
+
+/// IP 地址验证工具
+class IpValidator {
+  static final RegExp _ipRegex = RegExp(
+    r'^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$',
+  );
+  
+  static bool isValidIp(String ip) {
+    return _ipRegex.hasMatch(ip);
+  }
+  
+  static String? validate(String? value) {
+    if (value == null || value.isEmpty) {
+      return '请输入 IP 地址';
+    }
+    if (!isValidIp(value)) {
+      return 'IP 地址格式无效';
+    }
+    return null;
+  }
+}
+
+/// 端口验证工具
+class PortValidator {
+  static bool isValidPort(String port) {
+    final p = int.tryParse(port);
+    return p != null && p >= 1 && p <= 65535;
+  }
+  
+  static String? validate(String? value) {
+    if (value == null || value.isEmpty) {
+      return '请输入端口号';
+    }
+    if (!isValidPort(value)) {
+      return '端口号无效 (1-65535)';
+    }
+    return null;
+  }
 }
