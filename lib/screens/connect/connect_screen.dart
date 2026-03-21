@@ -6,9 +6,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/connection_provider.dart';
-import '../providers/device_provider.dart';
-import '../config/api_config.dart';
+import '../../providers/connection_provider.dart';
+import '../../providers/device_provider.dart';
+import '../../config/api_config.dart';
+import '../home/home_screen.dart';
 
 class ConnectScreen extends ConsumerStatefulWidget {
   const ConnectScreen({super.key});
@@ -115,6 +116,11 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
     
     if (success) {
       _showSuccess('已连接到 $ip:$port');
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
     } else {
       final error = ref.read(connectionProvider).errorMessage;
       _showError(error ?? '连接失败');

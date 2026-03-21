@@ -13,6 +13,7 @@ dependencies:
   
   # 网络
   dio: ^5.3.0
+  http: ^1.1.0
   web_socket_channel: ^2.4.0
   
   # 状态管理
