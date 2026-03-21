@@ -345,23 +345,30 @@ class DeviceState {
   /// 获取 CPU 使用率
   Future<double> getCpuUsage() async {
     try {
-      // Linux 从 /proc/stat 读取
-      final stat = await File('/proc/stat').readAsString();
-      final lines = stat.split('\n');
-      final cpuLine = lines.firstWhere(
-        (l) => l.startsWith('cpu '),
-        orElse: () => '',
-      );
-      
-      if (cpuLine.isEmpty) return 0;
-      
-      final parts = cpuLine.split(RegExp(r'\s+')).sublist(1);
-      final values = parts.map((s) => int.tryParse(s) ?? 0).toList();
-      final total = values.reduce((a, b) => a + b);
-      final idle = values.length > 3 ? values[3] : 0;
-      
-      if (total == 0) return 0;
-      return ((total - idle) / total * 100 * 10).round() / 10;
+      if (Platform.isLinux) {
+        final stat = await File('/proc/stat').readAsString();
+        final lines = stat.split('\n');
+        final cpuLine = lines.firstWhere(
+          (l) => l.startsWith('cpu '),
+          orElse: () => '',
+        );
+        
+        if (cpuLine.isEmpty) return 0;
+        
+        final parts = cpuLine.split(RegExp(r'\s+')).sublist(1);
+        final values = parts.map((s) => int.tryParse(s) ?? 0).toList();
+        final total = values.reduce((a, b) => a + b);
+        final idle = values.length > 3 ? values[3] : 0;
+        
+        if (total == 0) return 0;
+        return ((total - idle) / total * 100 * 10).round() / 10;
+      } else if (Platform.isWindows) {
+        final result = await Process.run('wmic', ['cpu', 'get', 'loadpercentage']);
+        final output = result.stdout.toString();
+        final match = RegExp(r'(\d+)').firstMatch(output);
+        return match != null ? double.parse(match.group(1)!) : 0.0;
+      }
+      return 0;
     } catch (e) {
       return 0;
     }
@@ -370,29 +377,50 @@ class DeviceState {
   /// 获取内存使用
   Future<MemoryInfo> getMemoryUsage() async {
     try {
-      final meminfo = await File('/proc/meminfo').readAsString();
-      final lines = meminfo.split('\n');
-      
-      int getValue(String key) {
-        final line = lines.firstWhere(
-          (l) => l.startsWith(key),
-          orElse: () => '',
+      if (Platform.isLinux) {
+        final meminfo = await File('/proc/meminfo').readAsString();
+        final lines = meminfo.split('\n');
+        
+        int getValue(String key) {
+          final line = lines.firstWhere(
+            (l) => l.startsWith(key),
+            orElse: () => '',
+          );
+          final match = RegExp(r'(\d+)').firstMatch(line);
+          return match != null ? (int.parse(match.group(1)!) * 1024) : 0;
+        }
+        
+        final total = getValue('MemTotal:');
+        final free = getValue('MemAvailable:');
+        final used = total - free;
+        final percentage = total > 0 ? (used / total * 100 * 10).round() / 10 : 0.0;
+        
+        return MemoryInfo(
+          total: total,
+          used: used,
+          free: free,
+          percentage: percentage,
         );
-        final match = RegExp(r'(\d+)').firstMatch(line);
-        return match != null ? (int.parse(match.group(1)!) * 1024) : 0;
+      } else if (Platform.isWindows) {
+        final result = await Process.run('wmic', ['OS', 'get', 'FreePhysicalMemory,TotalVisibleMemorySize', '/format:list']);
+        final output = result.stdout.toString();
+        
+        final freeMatch = RegExp(r'FreePhysicalMemory=(\d+)').firstMatch(output);
+        final totalMatch = RegExp(r'TotalVisibleMemorySize=(\d+)').firstMatch(output);
+        
+        final total = (int.tryParse(totalMatch?.group(1) ?? '0') ?? 0) * 1024;
+        final free = (int.tryParse(freeMatch?.group(1) ?? '0') ?? 0) * 1024;
+        final used = total - free;
+        final percentage = total > 0 ? (used / total * 100 * 10).round() / 10 : 0.0;
+        
+        return MemoryInfo(
+          total: total,
+          used: used,
+          free: free,
+          percentage: percentage,
+        );
       }
-      
-      final total = getValue('MemTotal:');
-      final free = getValue('MemAvailable:');
-      final used = total - free;
-      final percentage = total > 0 ? (used / total * 100 * 10).round() / 10 : 0.0;
-      
-      return MemoryInfo(
-        total: total,
-        used: used,
-        free: free,
-        percentage: percentage,
-      );
+      return MemoryInfo(total: 0, used: 0, free: 0, percentage: 0);
     } catch (e) {
       return MemoryInfo(total: 0, used: 0, free: 0, percentage: 0);
     }
@@ -401,25 +429,46 @@ class DeviceState {
   /// 获取存储使用
   Future<StorageInfo> getStorageUsage() async {
     try {
-      final result = await Process.run('df', ['-B1', '/']);
-      final lines = result.stdout.toString().split('\n');
-      
-      if (lines.length < 2) {
-        return StorageInfo(total: 0, used: 0, free: 0, percentage: 0);
+      if (Platform.isLinux) {
+        final result = await Process.run('df', ['-B1', '/']);
+        final lines = result.stdout.toString().split('\n');
+        
+        if (lines.length < 2) {
+          return StorageInfo(total: 0, used: 0, free: 0, percentage: 0);
+        }
+        
+        final parts = lines[1].split(RegExp(r'\s+'));
+        final total = int.tryParse(parts[1]) ?? 0;
+        final used = int.tryParse(parts[2]) ?? 0;
+        final free = int.tryParse(parts[3]) ?? 0;
+        final percentage = total > 0 ? (used / total * 100 * 10).round() / 10 : 0.0;
+        
+        return StorageInfo(
+          total: total,
+          used: used,
+          free: free,
+          percentage: percentage,
+        );
+      } else if (Platform.isWindows) {
+        final result = await Process.run('wmic', ['logicaldisk', 'where', 'DeviceID="C:"', 'get', 'Size,FreeSpace']);
+        final output = result.stdout.toString();
+        
+        final freeMatch = RegExp(r'FreeSpace=(\d+)').firstMatch(output);
+        final sizeMatch = RegExp(r'Size=(\d+)').firstMatch(output);
+        
+        final total = int.tryParse(sizeMatch?.group(1) ?? '0') ?? 0;
+        final free = int.tryParse(freeMatch?.group(1) ?? '0') ?? 0;
+        final used = total - free;
+        final percentage = total > 0 ? (used / total * 100 * 10).round() / 10 : 0.0;
+        
+        return StorageInfo(
+          total: total,
+          used: used,
+          free: free,
+          percentage: percentage,
+        );
       }
-      
-      final parts = lines[1].split(RegExp(r'\s+'));
-      final total = int.tryParse(parts[1]) ?? 0;
-      final used = int.tryParse(parts[2]) ?? 0;
-      final free = int.tryParse(parts[3]) ?? 0;
-      final percentage = total > 0 ? (used / total * 100 * 10).round() / 10 : 0.0;
-      
-      return StorageInfo(
-        total: total,
-        used: used,
-        free: free,
-        percentage: percentage,
-      );
+      return StorageInfo(total: 0, used: 0, free: 0, percentage: 0);
     } catch (e) {
       return StorageInfo(total: 0, used: 0, free: 0, percentage: 0);
     }

@@ -82,7 +82,7 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
               Text('3. 防火墙已允许 18790 端口'),
               Text('4. IP 地址是否正确'),
               SizedBox(height: 12),
-              Text('测试地址: 192.168.31.156:18790', 
+              Text('测试地址: 192.168.3.156:18790', 
                 style: TextStyle(fontFamily: 'monospace')),
             ],
           ),
@@ -313,7 +313,7 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              '默认地址: 192.168.31.156:18790',
+              '默认地址: 192.168.3.156:18790',
               style: TextStyle(color: Colors.grey, fontFamily: 'monospace'),
             ),
             const SizedBox(height: 16),

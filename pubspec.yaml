@@ -1,5 +1,5 @@
 name: geniusclaw_app
-description: "GeniusClaw OS - Flutter Mobile App"
+description: "GeniusClaw OS - Desktop Client"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -28,6 +28,9 @@ dependencies:
   # 工具
   path_provider: ^2.1.0
   intl: ^0.18.0
+  
+  # 桌面窗口管理
+  window_manager: ^0.3.0
 
 dev_dependencies:
   flutter_test:

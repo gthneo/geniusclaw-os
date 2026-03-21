@@ -1,6 +1,6 @@
 /// API 配置
 class ApiConfig {
-  static const String kDefaultHost = '192.168.31.156';
+  static const String kDefaultHost = '192.168.3.156';
   static const String kDefaultPort = '18790';
   static const String kRestApiPort = '8080';
   

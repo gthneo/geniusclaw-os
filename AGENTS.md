@@ -37,6 +37,11 @@ flutter analyze          # Lint/code analysis
 flutter analyze --fix    # Auto-fix issues
 flutter build apk        # Build for Android
 flutter build ios        # Build for iOS
+
+# Windows Desktop
+flutter config --enable-windows-desktop  # Enable Windows desktop
+flutter build windows --release            # Build Windows exe
+# Output: build/windows/x64/release/bundle/geniusclaw_app.exe
 ```
 
 ---
@@ -160,7 +165,7 @@ class MyController extends StateNotifier<AsyncValue<void>> {
 This section documents the requirements for the local LAN user interface.
 
 ### Test Benchmark Address
-- **Default IP**: `192.168.31.156`
+- **Default IP**: `192.168.3.156`
 - **Default Port**: `18790` (or `8080` for REST API)
 - **WebSocket**: `ws://{host}:{port}/ws`
 
