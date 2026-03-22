@@ -15,6 +15,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _portController = TextEditingController(text: ApiConfig.defaultPort);
   final _haUrlController = TextEditingController(text: ApiConfig.haUrl);
   final _haTokenController = TextEditingController(text: ApiConfig.haToken);
+  final _openClawApiKeyController = TextEditingController(text: ApiConfig.openClawApiKey);
 
   @override
   void dispose() {
@@ -22,6 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _portController.dispose();
     _haUrlController.dispose();
     _haTokenController.dispose();
+    _openClawApiKeyController.dispose();
     super.dispose();
   }
 
@@ -51,6 +53,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   hintText: '8080',
                 ),
                 keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _openClawApiKeyController,
+                decoration: const InputDecoration(
+                  labelText: 'Access Token',
+                  hintText: 'OpenClaw API Key',
+                ),
+                obscureText: true,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -147,11 +158,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _saveOpenClawConfig() async {
     ApiConfig.updateHost(_hostController.text, _portController.text);
+    ApiConfig.openClawApiKey = _openClawApiKeyController.text;
     
     // 保存到本地存储
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('gc_host', _hostController.text);
     await prefs.setString('gc_port', _portController.text);
+    await prefs.setString('openclaw_apikey', _openClawApiKeyController.text);
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

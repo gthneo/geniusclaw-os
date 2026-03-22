@@ -1,6 +1,6 @@
 /// API 配置
 class ApiConfig {
-  static const String kDefaultHost = '192.168.3.156';
+  static const String kDefaultHost = '192.168.31.156';
   static const String kDefaultPort = '18790';
   static const String kRestApiPort = '8080';
   
@@ -27,6 +27,8 @@ class ApiConfig {
   static String nasUrl = 'smb://192.168.1.102/nas';
   static String nasUsername = '';
   static String nasPassword = '';
+  
+  static String openClawApiKey = '';
 }
 
 /// IP 地址验证工具
