@@ -4,8 +4,14 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 import 'screens/connect/connect_screen.dart';
+import 'screens/home/home_screen.dart';
+import 'screens/skills/skills_screen.dart';
+import 'screens/devices/devices_screen.dart';
+import 'screens/files/files_screen.dart';
+import 'screens/settings/settings_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +35,7 @@ Future<void> main() async {
     });
   }
   
-  runApp(const GeniusClawApp());
+  runApp(const ProviderScope(child: GeniusClawApp()));
 }
 
 class GeniusClawApp extends StatelessWidget {
@@ -47,7 +53,74 @@ class GeniusClawApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const ConnectScreen(),
+      home: const AppShell(),
+    );
+  }
+}
+
+class AppShell extends StatefulWidget {
+  const AppShell({super.key});
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  int _currentIndex = 0;
+  
+  final List<Widget> _screens = const [
+    ConnectScreen(),
+    HomeScreen(),
+    SkillsScreen(),
+    DevicesScreen(),
+    FilesScreen(),
+    SettingsScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_currentIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.link_off),
+            selectedIcon: Icon(Icons.link),
+            label: '连接',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.chat_bubble_outline),
+            selectedIcon: Icon(Icons.chat_bubble),
+            label: 'AI对话',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.extension_outlined),
+            selectedIcon: Icon(Icons.extension),
+            label: '技能',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.devices_outlined),
+            selectedIcon: Icon(Icons.devices),
+            label: '设备',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.folder_outlined),
+            selectedIcon: Icon(Icons.folder),
+            label: '文件',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: '设置',
+          ),
+        ],
+      ),
     );
   }
 }
