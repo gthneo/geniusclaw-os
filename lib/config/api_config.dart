@@ -28,7 +28,7 @@ class ApiConfig {
   static String nasUsername = '';
   static String nasPassword = '';
   
-  static String openClawApiKey = '';
+  static String openClawApiKey = 'sk-yJf6vHPB1FfxVxtM99iRgeheMZaQz5v2NQjk7ZuyYVfFDrku1I9WWfXs5EWlSYwG';
 }
 
 /// IP 地址验证工具

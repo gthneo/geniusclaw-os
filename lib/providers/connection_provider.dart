@@ -85,6 +85,16 @@ class ConnectionNotifier extends StateNotifier<OpenClawConnectionState> {
         },
       );
       
+      // Send connect message with auth token
+      _channel!.sink.add(jsonEncode({
+        'type': 'connect',
+        'params': {
+          'auth': {
+            'token': ApiConfig.openClawApiKey,
+          },
+        },
+      }));
+      
       _settings.saveHost(targetHost, targetPort.toString());
       
       state = state.copyWith(
