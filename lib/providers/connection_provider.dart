@@ -175,7 +175,7 @@ class ConnectionNotifier extends StateNotifier<OpenClawConnectionState> {
     _reconnectTimer?.cancel();
     await _channel?.sink.close();
     _channel = null;
-    state = const ConnectionState();
+    state = const OpenClawConnectionState();
   }
   
   Future<void> updateHost(String host, int port) async {
@@ -198,7 +198,7 @@ final settingsServiceProvider = Provider<SettingsService>((ref) {
   return SettingsService();
 });
 
-final connectionProvider = StateNotifierProvider<ConnectionNotifier, ConnectionState>((ref) {
+final connectionProvider = StateNotifierProvider<ConnectionNotifier, OpenClawConnectionState>((ref) {
   final settings = ref.read(settingsServiceProvider);
   return ConnectionNotifier(settings);
 });
