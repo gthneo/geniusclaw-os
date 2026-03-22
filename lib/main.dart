@@ -12,6 +12,7 @@ import 'screens/skills/skills_screen.dart';
 import 'screens/devices/devices_screen.dart';
 import 'screens/files/files_screen.dart';
 import 'screens/settings/settings_screen.dart';
+import 'screens/ai_models/ai_models_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,6 +73,7 @@ class _AppShellState extends State<AppShell> {
     ConnectScreen(),
     HomeScreen(),
     SkillsScreen(),
+    AIModelsScreen(),
     DevicesScreen(),
     FilesScreen(),
     SettingsScreen(),
@@ -103,6 +105,11 @@ class _AppShellState extends State<AppShell> {
             icon: Icon(Icons.extension_outlined),
             selectedIcon: Icon(Icons.extension),
             label: '技能',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.smart_toy_outlined),
+            selectedIcon: Icon(Icons.smart_toy),
+            label: 'AI模型',
           ),
           NavigationDestination(
             icon: Icon(Icons.devices_outlined),
