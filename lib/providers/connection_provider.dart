@@ -13,14 +13,14 @@ enum ConnectionStatus {
   error,
 }
 
-class ConnectionState {
+class OpenClawConnectionState {
   final ConnectionStatus status;
   final String? host;
   final int? port;
   final String? errorMessage;
   final DateTime? connectedAt;
   
-  const ConnectionState({
+  const OpenClawConnectionState({
     this.status = ConnectionStatus.disconnected,
     this.host,
     this.port,
@@ -28,14 +28,14 @@ class ConnectionState {
     this.connectedAt,
   });
   
-  ConnectionState copyWith({
+  OpenClawConnectionState copyWith({
     ConnectionStatus? status,
     String? host,
     int? port,
     String? errorMessage,
     DateTime? connectedAt,
   }) {
-    return ConnectionState(
+    return OpenClawConnectionState(
       status: status ?? this.status,
       host: host ?? this.host,
       port: port ?? this.port,
@@ -48,13 +48,13 @@ class ConnectionState {
   bool get isConnecting => status == ConnectionStatus.connecting;
 }
 
-class ConnectionNotifier extends StateNotifier<ConnectionState> {
+class ConnectionNotifier extends StateNotifier<OpenClawConnectionState> {
   final SettingsService _settings;
   WebSocketChannel? _channel;
   Timer? _heartbeatTimer;
   Timer? _reconnectTimer;
   
-  ConnectionNotifier(this._settings) : super(const ConnectionState());
+  ConnectionNotifier(this._settings) : super(const OpenClawConnectionState());
   
   Future<void> init() async {
     final host = _settings.getSavedHost();

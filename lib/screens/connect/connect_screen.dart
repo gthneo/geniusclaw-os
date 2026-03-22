@@ -164,7 +164,7 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
     );
   }
 
-  Widget _buildConnectionStatus(ConnectionState state) {
+  Widget _buildConnectionStatus(OpenClawConnectionState state) {
     Color statusColor;
     String statusText;
     IconData statusIcon;
